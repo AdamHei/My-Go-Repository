@@ -10,7 +10,8 @@ import (
 )
 
 func main() {
-	db, err := sql.Open("mysql", "root:Spyrohurricane17@/eHireMe?parseTime=true")
+	dataSourceName := DB_USER + ":" + DB_PASSWORD + "@/eHireMe?parseTime=true"
+	db, err := sql.Open("mysql", dataSourceName)
 	if err != nil {
 		panic(err.Error())
 	}
