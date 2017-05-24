@@ -1,4 +1,4 @@
-package main
+package handlers
 
 import (
 	"net/http"
@@ -38,6 +38,12 @@ func NewRouter(env *Env) *mux.Router {
 			"/applicants/create/",
 			env.CreateApplicant,
 		},
+		Route{
+			"UpdateApplicant",
+			"POST",
+			"/applicants/update/",
+			env.UpdateApplicant,
+		},
 	}
 
 	router := mux.NewRouter().StrictSlash(true)
@@ -46,11 +52,7 @@ func NewRouter(env *Env) *mux.Router {
 			Path(route.Pattern).
 			Name(route.Name).
 			Handler(route.HandlerFunc)
-		//HandleFunc(route.Pattern, route.HandlerFunc).
-		//	Methods(route.Method).
-		//	Name(route.Name)
 	}
-
 	router.Headers("Content-Type", "application/json")
 
 	return router

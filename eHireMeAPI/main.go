@@ -1,15 +1,12 @@
 package main
 
-import "database/sql"
 import (
+	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"
+	"github.com/adamhei/handlers"
 )
-
-type Env struct {
-	db *sql.DB
-}
 
 func main() {
 	db, err := sql.Open("mysql", "root:Spyrohurricane17@/eHireMe?parseTime=true")
@@ -18,8 +15,8 @@ func main() {
 	}
 	defer db.Close()
 
-	env := &Env{db}
+	env := &handlers.Env{Db: db}
 
-	router := NewRouter(env)
+	router := handlers.NewRouter(env)
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

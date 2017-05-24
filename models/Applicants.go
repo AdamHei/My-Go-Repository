@@ -68,11 +68,7 @@ func GetApplicant(db *sql.DB, id int) (*Applicant, error) {
 }
 
 func StoreApplicant(db *sql.DB, applicant *Applicant) error {
-	id := -1
-	err := db.QueryRow("SELECT id FROM applicants WHERE id=?", applicant.Id).Scan(&id)
-
-	if id != -1 || err != nil {
-		//Or something else
+	if applicantExists(db, applicant) {
 		return &MyError{"Duplicate id"}
 	}
 
@@ -87,6 +83,34 @@ func StoreApplicant(db *sql.DB, applicant *Applicant) error {
 		return err
 	}
 
-	fmt.Println(res)
+	fmt.Println(res.LastInsertId())
 	return nil
+}
+
+func DeleteApplicant(db *sql.DB, id int) error {
+	res, err := db.Exec("DELETE FROM applicants WHERE id=?", id)
+	fmt.Println(res)
+
+	return err
+}
+
+func UpdateApplicant(db *sql.DB, applicant *Applicant) error {
+	if !applicantExists(db, applicant) {
+		return &MyError{"Applicant doesn't exist"}
+	}
+
+	storedApp, err := GetApplicant(db, applicant.Id)
+	if err != nil {
+		return err
+	}
+
+	mergedApp := mergeApplicants(storedApp, applicant)
+
+	err = DeleteApplicant(db, mergedApp.Id)
+	if err != nil {
+		return err
+	}
+
+	err = StoreApplicant(db, mergedApp)
+	return err
 }
