@@ -49,18 +49,20 @@ func All_employers(db *sql.DB) ([]*Employer, error) {
 	return employers, nil
 }
 
-func Store_employer(db *sql.DB, employer *Employer) error {
+func Store_employer(db *sql.DB, employer *Employer) (*Employer, error) {
 	res, err := db.Exec("INSERT INTO employers (company, password, email, description, prof_pic) "+
 		"VALUES (?, ?, ?, ?, ?)",
 		employer.Company, employer.Password, employer.Email, employer.Description, employer.Prof_Pic_Url)
 
 	if err != nil {
 		//Couldn't insert
-		return err
+		return nil, err
 	}
 
-	fmt.Println(res.LastInsertId())
-	return nil
+	id, _ := res.LastInsertId()
+	fmt.Println("Employer was stored with id:", id)
+
+	return Get_employer(db, int(id))
 }
 
 func Delete_employer(db *sql.DB, id int) error {
@@ -70,26 +72,25 @@ func Delete_employer(db *sql.DB, id int) error {
 	return err
 }
 
-func Update_employer(db *sql.DB, employer *Employer) error {
+func Update_employer(db *sql.DB, employer *Employer) (*Employer, error) {
 	if employer.ID <= 0 {
-		return &my_error{"Send a valid id"}
+		return nil, &my_error{"Send a valid id"}
 	}
 	if !employer_exists(db, employer.ID) {
-		return &my_error{"Employer doesn't exist"}
+		return nil, &my_error{"Employer doesn't exist"}
 	}
 
 	stored_emp, err := Get_employer(db, employer.ID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	merged_emp := merge_employers(stored_emp, employer)
 
 	err = Delete_employer(db, merged_emp.ID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	err = Store_employer(db, merged_emp)
-	return err
+	return Store_employer(db, merged_emp)
 }

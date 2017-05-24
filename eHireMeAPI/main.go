@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"github.com/adamhei/handlers"
+	"github.com/adamhei/routes"
 )
 
 func main() {
@@ -17,6 +18,6 @@ func main() {
 
 	env := &handlers.Env{Db: db}
 
-	router := handlers.NewRouter(env)
+	router := routes.NewRouter(env)
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

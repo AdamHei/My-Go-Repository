@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 	"database/sql"
-	"fmt"
+	"log"
 )
 
 type my_error struct {
@@ -67,7 +67,7 @@ func Get_applicant(db *sql.DB, id int) (*Applicant, error) {
 	return app, nil
 }
 
-func Store_applicant(db *sql.DB, applicant *Applicant) error {
+func Store_applicant(db *sql.DB, applicant *Applicant) (*Applicant, error) {
 	res, err := db.Exec("INSERT INTO applicants "+
 		"(name, email, password, dob, age, bio, city, state, title, field, title_experience, field_experience, prof_pic)"+
 		" VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -76,40 +76,42 @@ func Store_applicant(db *sql.DB, applicant *Applicant) error {
 
 	if err != nil {
 		//Couldn't insert
-		return err
+		return nil, err
 	}
 
-	fmt.Println(res.LastInsertId())
-	return nil
+	id, _ := res.LastInsertId()
+	log.Println("Applicant was stored with id:", id)
+
+	return Get_applicant(db, int(id))
 }
 
 func Delete_applicant(db *sql.DB, id int) error {
 	res, err := db.Exec("DELETE FROM applicants WHERE id=?", id)
-	fmt.Println(res.LastInsertId())
+	insert_id, _ := res.LastInsertId()
+	log.Printf("Applicant with id: %d was deleted", insert_id)
 
 	return err
 }
 
-func Update_applicant(db *sql.DB, applicant *Applicant) error {
+func Update_applicant(db *sql.DB, applicant *Applicant) (*Applicant, error) {
 	if applicant.ID <= 0 {
-		return &my_error{"Send me a valid id"}
+		return nil, &my_error{"Send me a valid id"}
 	}
 	if !applicant_exists(db, applicant.ID) {
-		return &my_error{"Applicant doesn't exist"}
+		return nil, &my_error{"Applicant doesn't exist"}
 	}
 
 	storedApp, err := Get_applicant(db, applicant.ID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	mergedApp := merge_applicants(storedApp, applicant)
 
 	err = Delete_applicant(db, mergedApp.ID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	err = Store_applicant(db, mergedApp)
-	return err
+	return Store_applicant(db, mergedApp)
 }

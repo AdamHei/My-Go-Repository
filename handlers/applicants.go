@@ -44,11 +44,11 @@ func (env *Env) Create_applicant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = models.Store_applicant(env.Db, app)
+	app, err = models.Store_applicant(env.Db, app)
 	if err != nil {
 		respond(w, "Unable to store applicant", err)
 	} else {
-		respond(w, "Success", nil)
+		respond(w, app, nil)
 	}
 }
 
@@ -60,10 +60,10 @@ func (env *Env) Update_applicant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = models.Update_applicant(env.Db, app)
+	app, err = models.Update_applicant(env.Db, app)
 	if err != nil {
 		respond(w, "Could not update applicant", err)
 	} else {
-		respond(w, "Success", nil)
+		respond(w, app, nil)
 	}
 }

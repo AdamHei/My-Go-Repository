@@ -29,7 +29,7 @@ func (env *Env) Employer_id(writer http.ResponseWriter, req *http.Request) {
 	emp, err := models.Get_employer(env.Db, int(emp_id))
 
 	if err != nil {
-		respond(writer, "We were unable to retrieve that applicant", err)
+		respond(writer, "We were unable to retrieve that employer", err)
 	} else {
 		respond(writer, emp, nil)
 	}
@@ -43,11 +43,11 @@ func (env *Env) Create_employer(w http.ResponseWriter, r *http.Request) {
 		respond(w, "Your format sucked", err)
 	}
 
-	err = models.Store_employer(env.Db, emp)
+	emp, err = models.Store_employer(env.Db, emp)
 	if err != nil {
 		respond(w, "Unable to store employer", err)
 	} else {
-		respond(w, "Success!", nil)
+		respond(w, emp, nil)
 	}
 }
 
@@ -59,10 +59,10 @@ func (env *Env) Update_employer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = models.Update_employer(env.Db, emp)
+	emp, err = models.Update_employer(env.Db, emp)
 	if err != nil {
 		respond(w, "Could not update employer", err)
 	} else {
-		respond(w, "Success!", nil)
+		respond(w, emp, nil)
 	}
 }
