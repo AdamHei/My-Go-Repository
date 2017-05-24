@@ -5,44 +5,44 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Route struct {
+type route struct {
 	Name, Method, Pattern string
 	HandlerFunc           http.HandlerFunc
 }
 
-type Routes []Route
+type routes []route
 
 func NewRouter(env *Env) *mux.Router {
-	var routes = Routes{
-		Route{
+	var routes = routes{
+		route{
 			"Index",
 			"GET",
 			"/",
 			env.Index,
 		},
-		Route{
-			"AllApplicants",
+		route{
+			"all_applicants",
 			"GET",
 			"/applicants/all/",
-			env.AllApplicants,
+			env.All_applicants,
 		},
-		Route{
+		route{
 			"ById",
 			"GET",
 			"/applicants/id/{id}",
-			env.ApplicantId,
+			env.Applicant_id,
 		},
-		Route{
-			"CreateApplicant",
+		route{
+			"Create_applicant",
 			"POST",
 			"/applicants/create/",
-			env.CreateApplicant,
+			env.Create_applicant,
 		},
-		Route{
-			"UpdateApplicant",
+		route{
+			"Update_applicant",
 			"POST",
 			"/applicants/update/",
-			env.UpdateApplicant,
+			env.Update_applicant,
 		},
 	}
 
