@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"net/http"
-	"github.com/adamhei/models"
+	"github.com/adamhei/eHireMeAPI/models"
 	"github.com/gorilla/mux"
 	"strconv"
 	"encoding/json"

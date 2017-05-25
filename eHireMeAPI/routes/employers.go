@@ -1,6 +1,6 @@
 package routes
 
-import "github.com/adamhei/handlers"
+import "github.com/adamhei/eHireMeAPI/handlers"
 
 func get_employer_routes(env *handlers.Env) Route_list {
 	return Route_list{

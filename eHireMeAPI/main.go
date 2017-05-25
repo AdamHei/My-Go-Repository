@@ -5,8 +5,8 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"
-	"github.com/adamhei/handlers"
-	"github.com/adamhei/routes"
+	"github.com/adamhei/eHireMeAPI/handlers"
+	"github.com/adamhei/eHireMeAPI/routes"
 )
 
 func main() {

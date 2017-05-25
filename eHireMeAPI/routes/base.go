@@ -3,7 +3,7 @@ package routes
 import (
 	"net/http"
 	"github.com/gorilla/mux"
-	"github.com/adamhei/handlers"
+	"github.com/adamhei/eHireMeAPI/handlers"
 )
 
 type route struct {
