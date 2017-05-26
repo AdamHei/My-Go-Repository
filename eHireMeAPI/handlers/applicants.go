@@ -44,7 +44,7 @@ func (env *Env) Create_applicant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app, err = models.Store_applicant(env.Db, app)
+	app, err = models.Store_applicant(env.Db, app, false)
 	if err != nil {
 		respond(w, "Unable to store applicant", err)
 	} else {

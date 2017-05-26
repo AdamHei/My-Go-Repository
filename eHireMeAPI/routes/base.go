@@ -25,6 +25,7 @@ func all_routes(env *handlers.Env) Route_list {
 
 	all_routes = append(all_routes, get_applicant_routes(env)...)
 	all_routes = append(all_routes, get_employer_routes(env)...)
+	all_routes = append(all_routes, get_jobs_routes(env)...)
 	return all_routes
 }
 

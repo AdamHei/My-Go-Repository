@@ -44,7 +44,7 @@ func All_applicants(db *sql.DB) ([]*Applicant, error) {
 	apps := make([]*Applicant, 0)
 	for rows.Next() {
 		app := new(Applicant)
-		err := rows.Scan(&app.Name, &app.ID, &app.Email, &app.Password, &app.Dob, &app.Age, &app.Bio, &app.City, &app.State, &app.Title, &app.Field, &app.Title_Experience, &app.Field_Experience, &app.Prof_Pic_Url)
+		err = rows.Scan(&app.ID, &app.Name, &app.Email, &app.Password, &app.Dob, &app.Age, &app.Bio, &app.City, &app.State, &app.Title, &app.Field, &app.Title_Experience, &app.Field_Experience, &app.Prof_Pic_Url)
 		if err != nil {
 			return nil, err
 		}
@@ -58,7 +58,7 @@ func All_applicants(db *sql.DB) ([]*Applicant, error) {
 
 func Get_applicant(db *sql.DB, id int) (*Applicant, error) {
 	app := new(Applicant)
-	e := db.QueryRow("SELECT * FROM applicants WHERE id=?", id).Scan(&app.Name, &app.ID, &app.Email, &app.Password, &app.Dob, &app.Age, &app.Bio, &app.City, &app.State, &app.Title, &app.Field, &app.Title_Experience, &app.Field_Experience, &app.Prof_Pic_Url)
+	e := db.QueryRow("SELECT * FROM applicants WHERE id=?", id).Scan(&app.ID, &app.Name, &app.Email, &app.Password, &app.Dob, &app.Age, &app.Bio, &app.City, &app.State, &app.Title, &app.Field, &app.Title_Experience, &app.Field_Experience, &app.Prof_Pic_Url)
 
 	if e != nil {
 		return nil, e
@@ -67,15 +67,11 @@ func Get_applicant(db *sql.DB, id int) (*Applicant, error) {
 	return app, nil
 }
 
-func Store_applicant(db *sql.DB, applicant *Applicant) (*Applicant, error) {
-	res, err := db.Exec("INSERT INTO applicants "+
-		"(name, email, password, dob, age, bio, city, state, title, field, title_experience, field_experience, prof_pic)"+
-		" VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-		applicant.Name, applicant.Email, applicant.Password, applicant.Dob, applicant.Age, applicant.Bio, applicant.City,
-		applicant.State, applicant.Title, applicant.Field, applicant.Title_Experience, applicant.Field_Experience, applicant.Prof_Pic_Url)
+func Store_applicant(db *sql.DB, applicant *Applicant, withID bool) (*Applicant, error) {
+	query := insert_query(*applicant, "applicant", withID)
+	res, err := db.Exec(query)
 
 	if err != nil {
-		//Couldn't insert
 		return nil, err
 	}
 
@@ -83,14 +79,6 @@ func Store_applicant(db *sql.DB, applicant *Applicant) (*Applicant, error) {
 	log.Println("Applicant was stored with id:", id)
 
 	return Get_applicant(db, int(id))
-}
-
-func Delete_applicant(db *sql.DB, id int) error {
-	res, err := db.Exec("DELETE FROM applicants WHERE id=?", id)
-	insert_id, _ := res.LastInsertId()
-	log.Printf("Applicant with id: %d was deleted", insert_id)
-
-	return err
 }
 
 func Update_applicant(db *sql.DB, applicant *Applicant) (*Applicant, error) {
@@ -113,5 +101,13 @@ func Update_applicant(db *sql.DB, applicant *Applicant) (*Applicant, error) {
 		return nil, err
 	}
 
-	return Store_applicant(db, mergedApp)
+	return Store_applicant(db, mergedApp, true)
+}
+
+func Delete_applicant(db *sql.DB, id int) error {
+	res, err := db.Exec("DELETE FROM applicants WHERE id=?", id)
+	insert_id, _ := res.LastInsertId()
+	log.Printf("Applicant with id: %d was deleted", insert_id)
+
+	return err
 }

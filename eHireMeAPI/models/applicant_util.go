@@ -2,35 +2,37 @@ package models
 
 import (
 	"database/sql"
-	"time"
+	"fmt"
 )
+
+func (app Applicant) member_fields(withID bool) string {
+	fields := "name, email, password, dob, age, bio, city, state, title, field, title_experience, field_experience, prof_pic)"
+	if withID {
+		fields = "(id, " + fields
+	} else {
+		fields = "(" + fields
+	}
+	return fields
+}
+
+func (app Applicant) member_values(withID bool) string {
+	dob := app.Dob.Format("YYY-MM-DD")
+	values := fmt.Sprintf("%s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %s, %s, %s)",
+		app.Name, app.Email, app.Password, dob, app.Age, app.Bio,
+		app.City, app.State, app.Title, app.Field, app.Title_Experience,
+		app.Field_Experience, app.Prof_Pic_Url)
+	if withID {
+		return add_ID(values, app.ID)
+	} else {
+		return "(" + values
+	}
+}
 
 func applicant_exists(db *sql.DB, query_id int) bool {
 	id := -1
 	err := db.QueryRow("SELECT id FROM applicants WHERE id=?", query_id).Scan(&id)
 
 	return id != -1 || err == nil
-}
-
-func choose_string(att1, att2 string) string {
-	if att2 == "" || att1 == att2 {
-		return att1
-	}
-	return att2
-}
-
-func choose_int(i1, i2 int) int {
-	if i2 == 0 || i1 == i2 {
-		return i1
-	}
-	return i2
-}
-
-func choose_time(t1, t2 time.Time) time.Time {
-	if t2.IsZero() || t1.Equal(t2) {
-		return t1
-	}
-	return t2
 }
 
 func merge_applicants(origApp, newApp *Applicant) *Applicant {

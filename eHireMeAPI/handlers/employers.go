@@ -43,7 +43,7 @@ func (env *Env) Create_employer(w http.ResponseWriter, r *http.Request) {
 		respond(w, "Your format sucked", err)
 	}
 
-	emp, err = models.Store_employer(env.Db, emp)
+	emp, err = models.Store_employer(env.Db, emp, false)
 	if err != nil {
 		respond(w, "Unable to store employer", err)
 	} else {

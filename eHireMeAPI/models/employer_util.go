@@ -1,6 +1,28 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+)
+
+func (employer Employer) member_fields(withID bool) string {
+	fields := "company, password, email, description, prof_pic)"
+	if withID {
+		return "(id, " + fields
+	} else {
+		return "(" + fields
+	}
+}
+
+func (employer Employer) member_values(withID bool) string {
+	values := fmt.Sprintf("%s, %s, %s, %s, %s)", employer.Company, employer.Password, employer.Email,
+		employer.Description, employer.Prof_Pic_Url)
+	if withID {
+		return add_ID(values, employer.ID)
+	} else {
+		return "(" + values
+	}
+}
 
 func employer_exists(db *sql.DB, query_id int) bool {
 	temp_id := -1

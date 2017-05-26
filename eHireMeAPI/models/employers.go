@@ -49,10 +49,9 @@ func All_employers(db *sql.DB) ([]*Employer, error) {
 	return employers, nil
 }
 
-func Store_employer(db *sql.DB, employer *Employer) (*Employer, error) {
-	res, err := db.Exec("INSERT INTO employers (company, password, email, description, prof_pic) "+
-		"VALUES (?, ?, ?, ?, ?)",
-		employer.Company, employer.Password, employer.Email, employer.Description, employer.Prof_Pic_Url)
+func Store_employer(db *sql.DB, employer *Employer, withID bool) (*Employer, error) {
+	query := insert_query(*employer, "employers", withID)
+	res, err := db.Exec(query)
 
 	if err != nil {
 		//Couldn't insert
@@ -92,5 +91,5 @@ func Update_employer(db *sql.DB, employer *Employer) (*Employer, error) {
 		return nil, err
 	}
 
-	return Store_employer(db, merged_emp)
+	return Store_employer(db, merged_emp, true)
 }
