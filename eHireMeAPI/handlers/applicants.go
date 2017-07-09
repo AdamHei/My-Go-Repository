@@ -8,6 +8,7 @@ import (
 	"strconv"
 )
 
+// All_applicants will attempt to return every applicant in the database
 func (env *Env) All_applicants(writer http.ResponseWriter, req *http.Request) {
 	applicants, err := models.All_applicants(env.Db)
 
@@ -18,6 +19,7 @@ func (env *Env) All_applicants(writer http.ResponseWriter, req *http.Request) {
 	}
 }
 
+// Applicant_id will attempt to return an applicant by their id in the database
 func (env *Env) Applicant_id(writer http.ResponseWriter, r *http.Request) {
 	args := mux.Vars(r)
 	user_id, err := strconv.ParseInt(args["id"], 10, 64)
@@ -35,6 +37,8 @@ func (env *Env) Applicant_id(writer http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Create_applicant will, given an applicant in JSON form, attempt to store the applicant in the database
+// and return it if successful
 func (env *Env) Create_applicant(w http.ResponseWriter, r *http.Request) {
 	app := new(models.Applicant)
 
@@ -52,6 +56,7 @@ func (env *Env) Create_applicant(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Update_applicant will, given a partial applicant, attempt to store it in the database and return it if successful
 func (env *Env) Update_applicant(w http.ResponseWriter, r *http.Request) {
 	app := new(models.Applicant)
 	err := json.NewDecoder(r.Body).Decode(app)

@@ -6,14 +6,7 @@ import (
 	"log"
 )
 
-type my_error struct {
-	err string
-}
-
-func (e *my_error) Error() string {
-	return e.err
-}
-
+// type Applicant is the struct representation of Applicants in the database, with corresponding JSON keys
 type Applicant struct {
 	Name string                `json:"name"`
 	ID   int                `json:"id"`
@@ -33,6 +26,7 @@ type Applicant struct {
 	Prof_Pic_Url     string        `json:"prof_pic_url"`
 }
 
+// All_applicants will, given a database, attempt to return all applicants in the corresponding table
 func All_applicants(db *sql.DB) ([]*Applicant, error) {
 	rows, err := db.Query("SELECT * FROM applicants")
 	if err != nil {
@@ -56,6 +50,7 @@ func All_applicants(db *sql.DB) ([]*Applicant, error) {
 	return apps, nil
 }
 
+// Get_applicant will attempt to return an applicant by id
 func Get_applicant(db *sql.DB, id int) (*Applicant, error) {
 	app := new(Applicant)
 	e := db.QueryRow("SELECT * FROM applicants WHERE id=?", id).Scan(&app.ID, &app.Name, &app.Email, &app.Password, &app.Dob, &app.Age, &app.Bio, &app.City, &app.State, &app.Title, &app.Field, &app.Title_Experience, &app.Field_Experience, &app.Prof_Pic_Url)
@@ -67,8 +62,11 @@ func Get_applicant(db *sql.DB, id int) (*Applicant, error) {
 	return app, nil
 }
 
+// Store_applicant will attempt to insert a given applicant in the proper table
+// withID = false when inserting for the first time
+// true when updating an applicant
 func Store_applicant(db *sql.DB, applicant *Applicant, withID bool) (*Applicant, error) {
-	query := insert_query(*applicant, "applicant", withID)
+	query := insert_query(*applicant, "applicants", withID)
 	res, err := db.Exec(query)
 
 	if err != nil {
@@ -81,6 +79,7 @@ func Store_applicant(db *sql.DB, applicant *Applicant, withID bool) (*Applicant,
 	return Get_applicant(db, int(id))
 }
 
+// Update_applicant will attempt to perform a partial update given an applicant and return the new applicant
 func Update_applicant(db *sql.DB, applicant *Applicant) (*Applicant, error) {
 	if applicant.ID <= 0 {
 		return nil, &my_error{"Send me a valid id"}
@@ -104,6 +103,7 @@ func Update_applicant(db *sql.DB, applicant *Applicant) (*Applicant, error) {
 	return Store_applicant(db, mergedApp, true)
 }
 
+// Delete_applicant will attempt to delete an applicant by id and return an error if any
 func Delete_applicant(db *sql.DB, id int) error {
 	res, err := db.Exec("DELETE FROM applicants WHERE id=?", id)
 	insert_id, _ := res.LastInsertId()

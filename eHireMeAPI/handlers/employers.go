@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 )
 
+// All_employers will attempt to return all employers in the database
 func (env *Env) All_employers(writer http.ResponseWriter, req *http.Request) {
 	employers, err := models.All_employers(env.Db)
 
@@ -18,6 +19,7 @@ func (env *Env) All_employers(writer http.ResponseWriter, req *http.Request) {
 	}
 }
 
+// Employer_id will attempt to return a given employer by its id in the database
 func (env *Env) Employer_id(writer http.ResponseWriter, req *http.Request) {
 	args := mux.Vars(req)
 	emp_id, err := strconv.ParseInt(args["id"], 10, 64)
@@ -35,6 +37,7 @@ func (env *Env) Employer_id(writer http.ResponseWriter, req *http.Request) {
 	}
 }
 
+// Create_employer will, given an employer, attempt to store it in the database and return it if successful
 func (env *Env) Create_employer(w http.ResponseWriter, r *http.Request) {
 	emp := new(models.Employer)
 
@@ -51,6 +54,8 @@ func (env *Env) Create_employer(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Update_employer will, given a partial employer, attempt to update that employer in the database and return it
+// if successful
 func (env *Env) Update_employer(w http.ResponseWriter, r *http.Request) {
 	emp := new(models.Employer)
 	err := json.NewDecoder(r.Body).Decode(emp)

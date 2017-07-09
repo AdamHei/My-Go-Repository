@@ -5,6 +5,8 @@ import (
 	"fmt"
 )
 
+// member_fields, part of the Model implementation, returns a formatted string of all columns in the Job schema
+// with or without ID
 func (job Job) member_fields(withId bool) string {
 	fields := "employer_id, description, compensation, title, field, title_experience, field_experience, city, state, active)"
 	if withId {
@@ -15,6 +17,8 @@ func (job Job) member_fields(withId bool) string {
 	return fields
 }
 
+// member_values, part of the Model implementation, returns a formatted string of all member values of a given job,
+// with or without its ID
 func (job Job) member_values(withId bool) string {
 	values := fmt.Sprintf("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
 		job.Employer_ID, job.Description, job.Compensation, job.Title, job.Field,
@@ -33,6 +37,8 @@ func job_exists(db *sql.DB, query_id int) bool {
 	return id != -1 || err == nil
 }
 
+// merge_jobs will return the merged version of a job from the database and one from the client,
+// as part of a partial update
 func merge_jobs(originalJob, newJob *Job) *Job {
 	merged := new(Job)
 	merged.ID = originalJob.ID

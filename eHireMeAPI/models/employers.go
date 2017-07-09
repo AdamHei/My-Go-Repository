@@ -14,6 +14,7 @@ type Employer struct {
 	Prof_Pic_Url string `json:"prof_pic_url"`
 }
 
+// Get_employer returns an employer by ID from the database
 func Get_employer(db *sql.DB, id int) (*Employer, error) {
 	emp := new(Employer)
 	e := db.QueryRow("SELECT * FROM employers WHERE id=?", id).Scan(&emp.ID,
@@ -25,6 +26,7 @@ func Get_employer(db *sql.DB, id int) (*Employer, error) {
 	return emp, nil
 }
 
+// All_employers returns every employer in the corresponding table
 func All_employers(db *sql.DB) ([]*Employer, error) {
 	rows, err := db.Query("SELECT * FROM employers")
 	if err != nil {
@@ -49,6 +51,9 @@ func All_employers(db *sql.DB) ([]*Employer, error) {
 	return employers, nil
 }
 
+// Store_employer will, given an employer, attempt to insert it into the proper table
+// withID = false when inserting the first time
+// true when performing a partial update
 func Store_employer(db *sql.DB, employer *Employer, withID bool) (*Employer, error) {
 	query := insert_query(*employer, "employers", withID)
 	res, err := db.Exec(query)
@@ -64,13 +69,7 @@ func Store_employer(db *sql.DB, employer *Employer, withID bool) (*Employer, err
 	return Get_employer(db, int(id))
 }
 
-func Delete_employer(db *sql.DB, id int) error {
-	res, err := db.Exec("DELETE FROM employers WHERE id=?", id)
-	fmt.Println(res.LastInsertId())
-
-	return err
-}
-
+// Update_employer will attempt to perform a partial update by merging employers and returning the new form
 func Update_employer(db *sql.DB, employer *Employer) (*Employer, error) {
 	if employer.ID <= 0 {
 		return nil, &my_error{"Send a valid id"}
@@ -92,4 +91,12 @@ func Update_employer(db *sql.DB, employer *Employer) (*Employer, error) {
 	}
 
 	return Store_employer(db, merged_emp, true)
+}
+
+// Delete_employer will remove an employer from the database by id
+func Delete_employer(db *sql.DB, id int) error {
+	res, err := db.Exec("DELETE FROM employers WHERE id=?", id)
+	fmt.Println(res.LastInsertId())
+
+	return err
 }

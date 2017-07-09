@@ -2,41 +2,42 @@ package routes
 
 import "github.com/adamhei/eHireMeAPI/handlers"
 
+// get_jobs_routes returns a Route_list as a registry of all Jobs routes
 func get_jobs_routes(env *handlers.Env) Route_list {
 	return Route_list{
 		route{
 			"All_jobs",
-			"GET",
+			GET,
 			"/jobs/all/",
 			env.All_jobs,
 		},
 		route{
 			"Job_By_ID",
-			"GET",
+			GET,
 			"/jobs/id/{id}",
 			env.Job_id,
 		},
 		route{
 			"Job_By_Employer",
-			"GET",
+			GET,
 			"/jobs/employer/{id}",
-			env.Job_by_employer,
+			env.Jobs_by_employer,
 		},
 		route{
 			"Create_job",
-			"POST",
+			POST,
 			"/jobs/create/",
 			env.Create_job,
 		},
 		route{
 			"Update_job",
-			"POST",
+			POST,
 			"/jobs/update/",
 			env.Update_job,
 		},
 		route{
 			"Delete_job",
-			"DELETE",
+			DELETE,
 			"/jobs/delete/{id}",
 			env.Delete_job,
 		},

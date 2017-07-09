@@ -9,6 +9,7 @@ import (
 	"github.com/adamhei/eHireMeAPI/routes"
 )
 
+// main, the driver of the eHireMeAPI, opens a database connection, fetches a new Router, and kicks off the HTTP server
 func main() {
 	dataSourceName := DB_USER + ":" + DB_PASSWORD + "@/eHireMe?parseTime=true"
 	db, err := sql.Open("mysql", dataSourceName)

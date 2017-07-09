@@ -5,6 +5,7 @@ import (
 	"fmt"
 )
 
+// member_fields, part of the Model implementation, returns the column names of the Employer schema, with or without ID
 func (employer Employer) member_fields(withID bool) string {
 	fields := "company, password, email, description, prof_pic)"
 	if withID {
@@ -14,6 +15,8 @@ func (employer Employer) member_fields(withID bool) string {
 	}
 }
 
+// member_values, part of the Model implementation, returns a formatted string of the member values of a given Employer
+// with or without the ID
 func (employer Employer) member_values(withID bool) string {
 	values := fmt.Sprintf("%s, %s, %s, %s, %s)", employer.Company, employer.Password, employer.Email,
 		employer.Description, employer.Prof_Pic_Url)
@@ -31,6 +34,7 @@ func employer_exists(db *sql.DB, query_id int) bool {
 	return temp_id != -1 || err == nil
 }
 
+// merge_employers will, given an employer from the database and one from the client, return the merged version of the two
 func merge_employers(original_emp, new_emp *Employer) *Employer {
 	merged := new(Employer)
 	merged.ID = original_emp.ID

@@ -79,6 +79,9 @@ func job_by_query(db *sql.DB, query string, param interface{}) (*Job, error) {
 
 //TODO Applicants that have applied towards a job - Matches
 
+// Store_job will attempt to insert a given job into the proper table and return it
+// withID = false when inserting for the first time
+// true when performing a partial update
 func Store_job(db *sql.DB, job *Job, withID bool) (*Job, error) {
 	query := insert_query(*job, "jobs", withID)
 	res, err := db.Exec(query)
@@ -93,6 +96,7 @@ func Store_job(db *sql.DB, job *Job, withID bool) (*Job, error) {
 	return Get_job(db, int(id))
 }
 
+// Update_job will attempt to perform a partial update, by merging the job from the database with the given job
 func Update_job(db *sql.DB, job *Job) (*Job, error) {
 	if job.ID <= 0 {
 		return nil, &my_error{"Send me a valid id"}
@@ -118,6 +122,7 @@ func Update_job(db *sql.DB, job *Job) (*Job, error) {
 
 //TODO Set active/inactive
 
+// Delete_job will attempt to remove a job by id from the database
 func Delete_job(db *sql.DB, id int) error {
 	fmt.Println(id)
 	res, err := db.Exec("DELETE FROM jobs WHERE id=?", id)
