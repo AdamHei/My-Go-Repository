@@ -2,31 +2,24 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 )
 
-// member_fields, part of the Model implementation, returns a formatted string of all columns in the Job schema
-// with or without ID
-func (job Job) member_fields(withId bool) string {
-	fields := "employer_id, description, compensation, title, field, title_experience, field_experience, city, state, active)"
-	if withId {
-		fields = "(id, " + fields
-	} else {
-		fields = "(" + fields
-	}
-	return fields
-}
+const job_insert_statement = "INSERT INTO jobs " +
+	"(employer_id, description, compensation, title, field, title_experience, field_experience, city, state, active) " +
+	"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+const job_update_statement = "UPDATE jobs " +
+	"SET employer_id = ?, description = ?, compensation = ?, title = ?, field = ?, title_experience = ?, " +
+	"field_experience = ?, city = ?, state = ?, active = ? WHERE id = ?"
 
-// member_values, part of the Model implementation, returns a formatted string of all member values of a given job,
+// model_values, part of the Model implementation, returns a formatted string of all member values of a given job,
 // with or without its ID
-func (job Job) member_values(withId bool) string {
-	values := fmt.Sprintf("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-		job.Employer_ID, job.Description, job.Compensation, job.Title, job.Field,
-		job.Title_experience, job.Field_experience, job.City, job.State, job.Active)
+func (job Job) model_values(withId bool) []interface{} {
+	values := []interface{}{job.Employer_ID, job.Description, job.Compensation, job.Title, job.Field,
+							job.Title_experience, job.Field_experience, job.City, job.State, job.Active}
 	if withId {
-		return add_ID(values, job.ID)
+		return append(values, job.ID)
 	} else {
-		return "(" + values
+		return values
 	}
 }
 

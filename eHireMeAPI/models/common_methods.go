@@ -4,38 +4,36 @@ package models
 import (
 	"time"
 	"fmt"
+	"database/sql"
 )
 
-// type my_error is a simple implementation of the error interface
-type my_error struct {
-	err string
+// type My_error is a simple implementation of the error interface
+type My_error struct {
+	Err string
+	Error_code int
 }
 
-func (e *my_error) Error() string {
-	return e.err
+func (e *My_error) Error() string {
+	return e.Err
+}
+
+func (e *My_error) ErrorCode() int {
+	return e.Error_code
 }
 
 // type Model defines an interface for models that correspond to a table schema
 // These methods are used for all database related queries
 type Model interface {
-	// member_fields returns all columns related to the Model schema, with or without the ID primary key
-	member_fields(withID bool) string
-
-	// member_values returns all member values of the Model schema, with or without the ID primary key
-	member_values(withID bool) string
+	// model_values returns all member values of the Model schema, with or without the ID primary key
+	model_values(withID bool) []interface{}
 }
 
-// insert_query will format the INSERT query for a given Model in a given table, by name
-func insert_query(model Model, table string, withID bool) string {
-	fields := model.member_fields(withID)
-	values := model.member_values(withID)
-	return fmt.Sprintf("INSERT INTO %s %s VALUES %s", table, fields, values)
+func insert_model(model Model, insert_statement string, db *sql.DB) (sql.Result, error) {
+	return db.Exec(insert_statement, model.model_values(false)...)
 }
 
-// add_ID will prepend a primary key ID to a given string
-// Usually used in member_fields and member_values implementations
-func add_ID(str string, id int) string {
-	return fmt.Sprintf("(%d, %s", id, str)
+func update_model(model Model, update_statement string, db *sql.DB) (sql.Result, error) {
+	return db.Exec(update_statement, model.model_values(true)...)
 }
 
 // choose_string is a helper function used when merging structs that will return one of two strings given

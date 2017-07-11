@@ -5,29 +5,22 @@ import (
 	"fmt"
 )
 
-// member_fields, the implementation of the Model interface, returns the columns names of the Applicant schema,
-// with or without the primary key id
-func (app Applicant) member_fields(withID bool) string {
-	fields := "name, email, password, dob, age, bio, city, state, title, field, title_experience, field_experience, prof_pic)"
-	if withID {
-		return "(id, " + fields
-	} else {
-		return "(" + fields
-	}
-}
+const app_insert_statement = "INSERT INTO applicants " +
+	"(name, email, password, dob, age, bio, city, state, title, field, title_experience, field_experience, prof_pic) " +
+	"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+const app_update_statement = "UPDATE applicants SET name = ?, email = ?, password = ?, dob = ?, age = ?, bio = ?, " +
+	"city = ?, state = ?, title = ?, field = ?, title_experience = ?, field_experience = ?, prof_pic = ? WHERE id = ?"
 
-// member_values, part of the Model interface implementation, returns the values of the receiver Applicant
+// model_values, part of the Model interface implementation, returns the values of the receiver Applicant
 // corresponding to the Applicant schema, with or without the primary key id
-func (app Applicant) member_values(withID bool) string {
-	dob := app.Dob.Format("YYYY-MM-DD")
-	values := fmt.Sprintf("%s, %s, %s, %s, %d, %s, %s, %s, %s, %s, %s, %s, %s)",
-		app.Name, app.Email, app.Password, dob, app.Age, app.Bio,
-		app.City, app.State, app.Title, app.Field, app.Title_Experience,
-		app.Field_Experience, app.Prof_Pic_Url)
+func (app Applicant) model_values(withID bool) []interface{} {
+	values := []interface{}{app.Name, app.Email, app.Password, app.Dob.Format("2006-01-02"), app.Age, app.Bio,
+							app.City, app.State, app.Title, app.Field, app.Title_Experience,
+							app.Field_Experience, app.Prof_Pic_Url}
 	if withID {
-		return add_ID(values, app.ID)
+		return append(values, app.ID)
 	} else {
-		return "(" + values
+		return values
 	}
 }
 

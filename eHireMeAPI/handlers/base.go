@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"log"
 	"encoding/json"
+	"github.com/adamhei/eHireMeAPI/models"
 )
 
 // Type Env serves as a form of dependency injection to neatly deal with passing the database around
@@ -21,10 +22,13 @@ func (env *Env) Index(writer http.ResponseWriter, r *http.Request) {
 }
 
 // respond is a helper function used throughout the package to easily print errors and send responses to the client
-func respond(writer http.ResponseWriter, data interface{}, err error) {
+func respond(writer http.ResponseWriter, data interface{}, err *models.My_error) {
+	writer.Header().Set("Content-Type", "application/json; charset=utf-8")
+
 	if err != nil {
 		log.Println(err.Error())
+		http.Error(writer, err.Error(), err.ErrorCode())
+	} else {
+		json.NewEncoder(writer).Encode(data)
 	}
-	writer.Header().Set("Content-Type", "application/json; charset=utf-8")
-	json.NewEncoder(writer).Encode(data)
 }

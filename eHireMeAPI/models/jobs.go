@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"net/http"
 )
 
 type Job struct {
@@ -83,8 +84,7 @@ func job_by_query(db *sql.DB, query string, param interface{}) (*Job, error) {
 // withID = false when inserting for the first time
 // true when performing a partial update
 func Store_job(db *sql.DB, job *Job, withID bool) (*Job, error) {
-	query := insert_query(*job, "jobs", withID)
-	res, err := db.Exec(query)
+	res, err := insert_model(job, job_insert_statement, db)
 
 	if err != nil {
 		return nil, err
@@ -99,10 +99,10 @@ func Store_job(db *sql.DB, job *Job, withID bool) (*Job, error) {
 // Update_job will attempt to perform a partial update, by merging the job from the database with the given job
 func Update_job(db *sql.DB, job *Job) (*Job, error) {
 	if job.ID <= 0 {
-		return nil, &my_error{"Send me a valid id"}
+		return nil, &My_error{"Send me a valid id", http.StatusBadRequest}
 	}
 	if !job_exists(db, job.ID) {
-		return nil, &my_error{"Job doesn't exist"}
+		return nil, &My_error{"Job doesn't exist", http.StatusBadRequest}
 	}
 
 	stored_job, err := Get_job(db, job.ID)
@@ -112,12 +112,13 @@ func Update_job(db *sql.DB, job *Job) (*Job, error) {
 
 	merged_job := merge_jobs(stored_job, job)
 
-	err = Delete_job(db, merged_job.ID)
+	_, err = update_model(merged_job, job_update_statement, db)
+
 	if err != nil {
 		return nil, err
 	}
 
-	return Store_job(db, merged_job, true)
+	return Get_job(db, merged_job.ID)
 }
 
 //TODO Set active/inactive

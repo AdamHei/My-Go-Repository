@@ -4,6 +4,7 @@ import (
 	"time"
 	"database/sql"
 	"log"
+	"net/http"
 )
 
 // type Applicant is the struct representation of Applicants in the database, with corresponding JSON keys
@@ -53,7 +54,9 @@ func All_applicants(db *sql.DB) ([]*Applicant, error) {
 // Get_applicant will attempt to return an applicant by id
 func Get_applicant(db *sql.DB, id int) (*Applicant, error) {
 	app := new(Applicant)
-	e := db.QueryRow("SELECT * FROM applicants WHERE id=?", id).Scan(&app.ID, &app.Name, &app.Email, &app.Password, &app.Dob, &app.Age, &app.Bio, &app.City, &app.State, &app.Title, &app.Field, &app.Title_Experience, &app.Field_Experience, &app.Prof_Pic_Url)
+	e := db.QueryRow("SELECT * FROM applicants WHERE id=?", id).Scan(&app.ID, &app.Name, &app.Email,
+		&app.Password, &app.Dob, &app.Age, &app.Bio, &app.City, &app.State, &app.Title, &app.Field,
+		&app.Title_Experience, &app.Field_Experience, &app.Prof_Pic_Url)
 
 	if e != nil {
 		return nil, e
@@ -65,9 +68,8 @@ func Get_applicant(db *sql.DB, id int) (*Applicant, error) {
 // Store_applicant will attempt to insert a given applicant in the proper table
 // withID = false when inserting for the first time
 // true when updating an applicant
-func Store_applicant(db *sql.DB, applicant *Applicant, withID bool) (*Applicant, error) {
-	query := insert_query(*applicant, "applicants", withID)
-	res, err := db.Exec(query)
+func Store_applicant(db *sql.DB, applicant *Applicant) (*Applicant, error) {
+	res, err := insert_model(applicant, app_insert_statement, db)
 
 	if err != nil {
 		return nil, err
@@ -82,10 +84,10 @@ func Store_applicant(db *sql.DB, applicant *Applicant, withID bool) (*Applicant,
 // Update_applicant will attempt to perform a partial update given an applicant and return the new applicant
 func Update_applicant(db *sql.DB, applicant *Applicant) (*Applicant, error) {
 	if applicant.ID <= 0 {
-		return nil, &my_error{"Send me a valid id"}
+		return nil, &My_error{"Send me a valid id", http.StatusBadRequest}
 	}
 	if !applicant_exists(db, applicant.ID) {
-		return nil, &my_error{"Applicant doesn't exist"}
+		return nil, &My_error{"Applicant doesn't exist", http.StatusBadRequest}
 	}
 
 	storedApp, err := Get_applicant(db, applicant.ID)
@@ -94,13 +96,13 @@ func Update_applicant(db *sql.DB, applicant *Applicant) (*Applicant, error) {
 	}
 
 	mergedApp := merge_applicants(storedApp, applicant)
+	_, err = update_model(mergedApp, app_update_statement, db)
 
-	err = Delete_applicant(db, mergedApp.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	return Store_applicant(db, mergedApp, true)
+	return Get_applicant(db, mergedApp.ID)
 }
 
 // Delete_applicant will attempt to delete an applicant by id and return an error if any

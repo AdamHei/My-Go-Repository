@@ -14,7 +14,9 @@ func (env *Env) All_jobs(writer http.ResponseWriter, req *http.Request) {
 	jobs, err := models.All_jobs(env.Db)
 
 	if err != nil {
-		respond(writer, "We could not fetch all jobs for you", err)
+		respond(writer,
+			"We could not fetch all jobs for you",
+			&models.My_error{err.Error(), http.StatusInternalServerError})
 	} else {
 		respond(writer, jobs, nil)
 	}
@@ -25,14 +27,18 @@ func (env *Env) Jobs_by_employer(writer http.ResponseWriter, req *http.Request) 
 	args := mux.Vars(req)
 	emp_id, err := strconv.ParseInt(args["id"], 10, 64)
 	if err != nil {
-		respond(writer, "Give me an employer id!", err)
+		respond(writer,
+			"Give me an employer id!",
+			&models.My_error{err.Error(), http.StatusBadRequest})
 		return
 	}
 
 	jobs, err := models.Get_jobs_by_employer(env.Db, int(emp_id))
 
 	if err != nil {
-		respond(writer, "We could not fetch all jobs for that employer", err)
+		respond(writer,
+			"We could not fetch all jobs for that employer",
+			&models.My_error{err.Error(), http.StatusInternalServerError})
 	} else {
 		respond(writer, jobs, nil)
 	}
@@ -43,14 +49,16 @@ func (env *Env) Job_id(writer http.ResponseWriter, req *http.Request) {
 	args := mux.Vars(req)
 	job_id, err := strconv.ParseInt(args["id"], 10, 64)
 	if err != nil {
-		respond(writer, "Give me a job id!", err)
+		respond(writer, "Give me a job id!", &models.My_error{err.Error(), http.StatusBadRequest})
 		return
 	}
 
 	jobs, err := models.Get_job(env.Db, int(job_id))
 
 	if err != nil {
-		respond(writer, "Could not fetch that job", err)
+		respond(writer,
+			"Could not fetch that job",
+			&models.My_error{err.Error(), http.StatusInternalServerError})
 	} else {
 		respond(writer, jobs, nil)
 	}
@@ -62,13 +70,15 @@ func (env *Env) Create_job(writer http.ResponseWriter, req *http.Request) {
 
 	err := json.NewDecoder(req.Body).Decode(job)
 	if err != nil {
-		respond(writer, "Your format sucked", err)
+		respond(writer, "Your format sucked", &models.My_error{err.Error(), http.StatusBadRequest})
 		return
 	}
 
 	job, err = models.Store_job(env.Db, job, false)
 	if err != nil {
-		respond(writer, "Unable to store job", err)
+		respond(writer,
+			"Unable to store job",
+			&models.My_error{err.Error(), http.StatusInternalServerError})
 	} else {
 		respond(writer, job, nil)
 	}
@@ -80,13 +90,15 @@ func (env *Env) Update_job(writer http.ResponseWriter, req *http.Request) {
 	err := json.NewDecoder(req.Body).Decode(job)
 
 	if err != nil {
-		respond(writer, "Your format sucked", err)
+		respond(writer, "Your format sucked", &models.My_error{err.Error(), http.StatusBadRequest})
 		return
 	}
 
 	job, err = models.Update_job(env.Db, job)
 	if err != nil {
-		respond(writer, "Could not update job", err)
+		respond(writer,
+			"Could not update job",
+			&models.My_error{err.Error(), http.StatusInternalServerError})
 	} else {
 		respond(writer, job, nil)
 	}
@@ -98,14 +110,16 @@ func (env *Env) Delete_job(writer http.ResponseWriter, req *http.Request) {
 	job_id, err := strconv.ParseInt(args["id"], 10, 64)
 	fmt.Printf("Job id: %d was given\n", int(job_id))
 	if err != nil {
-		respond(writer, "Give me an integer id", err)
+		respond(writer, "Give me an integer id", &models.My_error{err.Error(), http.StatusBadRequest})
 		return
 	}
 
 	err = models.Delete_job(env.Db, int(job_id))
 
 	if err != nil {
-		respond(writer, "We could not delete that job", err)
+		respond(writer,
+			"We could not delete that job",
+			&models.My_error{err.Error(), http.StatusInternalServerError})
 	} else {
 		respond(writer, "Job deleted", nil)
 	}

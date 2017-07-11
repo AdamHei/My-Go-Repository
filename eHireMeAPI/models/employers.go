@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"net/http"
 )
 
 type Employer struct {
@@ -54,9 +55,8 @@ func All_employers(db *sql.DB) ([]*Employer, error) {
 // Store_employer will, given an employer, attempt to insert it into the proper table
 // withID = false when inserting the first time
 // true when performing a partial update
-func Store_employer(db *sql.DB, employer *Employer, withID bool) (*Employer, error) {
-	query := insert_query(*employer, "employers", withID)
-	res, err := db.Exec(query)
+func Store_employer(db *sql.DB, employer *Employer) (*Employer, error) {
+	res, err := insert_model(employer, emp_insert_statement, db)
 
 	if err != nil {
 		//Couldn't insert
@@ -72,10 +72,10 @@ func Store_employer(db *sql.DB, employer *Employer, withID bool) (*Employer, err
 // Update_employer will attempt to perform a partial update by merging employers and returning the new form
 func Update_employer(db *sql.DB, employer *Employer) (*Employer, error) {
 	if employer.ID <= 0 {
-		return nil, &my_error{"Send a valid id"}
+		return nil, &My_error{"Send a valid id", http.StatusBadRequest}
 	}
 	if !employer_exists(db, employer.ID) {
-		return nil, &my_error{"Employer doesn't exist"}
+		return nil, &My_error{"Employer doesn't exist", http.StatusBadRequest}
 	}
 
 	stored_emp, err := Get_employer(db, employer.ID)
@@ -85,12 +85,13 @@ func Update_employer(db *sql.DB, employer *Employer) (*Employer, error) {
 
 	merged_emp := merge_employers(stored_emp, employer)
 
-	err = Delete_employer(db, merged_emp.ID)
+	_, err = update_model(merged_emp, emp_update_statement, db)
+
 	if err != nil {
 		return nil, err
 	}
 
-	return Store_employer(db, merged_emp, true)
+	return Get_employer(db, merged_emp.ID)
 }
 
 // Delete_employer will remove an employer from the database by id

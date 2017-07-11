@@ -2,28 +2,19 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
 )
 
-// member_fields, part of the Model implementation, returns the column names of the Employer schema, with or without ID
-func (employer Employer) member_fields(withID bool) string {
-	fields := "company, password, email, description, prof_pic)"
-	if withID {
-		return "(id, " + fields
-	} else {
-		return "(" + fields
-	}
-}
+const emp_insert_statement = "INSERT INTO employers (company, password, email, description, prof_pic) VALUES (?, ?, ?, ?, ?)"
+const emp_update_statement = "UPDATE employers SET company = ?, password = ?, email = ?, description = ?, prof_pic = ? WHERE id = ?"
 
-// member_values, part of the Model implementation, returns a formatted string of the member values of a given Employer
+// model_values, part of the Model implementation, returns a formatted string of the member values of a given Employer
 // with or without the ID
-func (employer Employer) member_values(withID bool) string {
-	values := fmt.Sprintf("%s, %s, %s, %s, %s)", employer.Company, employer.Password, employer.Email,
-		employer.Description, employer.Prof_Pic_Url)
+func (employer Employer) model_values(withID bool) []interface{} {
+	values := []interface{}{employer.Company, employer.Password, employer.Email, employer.Description, employer.Prof_Pic_Url}
 	if withID {
-		return add_ID(values, employer.ID)
+		return append(values, employer.ID)
 	} else {
-		return "(" + values
+		return values
 	}
 }
 
