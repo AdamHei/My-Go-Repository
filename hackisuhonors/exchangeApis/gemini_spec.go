@@ -2,8 +2,13 @@ package exchangeApis
 
 const GEMINIURL = "https://api.gemini.com/v1/pubticker/btcusd"
 
-func (response GeminiTicker) GetBidAsk() []string {
-	return []string{"Gemini", response.Bid, response.Ask}
+func (response GeminiTicker) GetExchangeData() map[string]map[string]interface{} {
+	return map[string]map[string]interface{}{
+		"Gemini": {
+			"Bid": response.Bid,
+			"Ask": response.Ask,
+		},
+	}
 }
 
 type GeminiTicker struct {

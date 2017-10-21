@@ -9,22 +9,20 @@ import (
 
 // type Applicant is the struct representation of Applicants in the database, with corresponding JSON keys
 type Applicant struct {
-	Name string                `json:"name"`
-	ID   int                `json:"id"`
-
-	Email    string        `json:"email"`
-	Password string        `json:"password"`
-
-	Dob              time.Time                `json:"dob"`
-	Age              int               `json:"age"`
-	Bio              string        `json:"bio"`
-	City             string        `json:"city"`
-	State            string        `json:"state"`
-	Title            string        `json:"title"`
-	Field            string        `json:"field"`
-	Title_Experience string        `json:"title_experience"`
-	Field_Experience string        `json:"field_experience"`
-	Prof_Pic_Url     string        `json:"prof_pic_url"`
+	Name             string    `json:"name"`
+	ID               int       `json:"id"`
+	Email            string    `json:"email"`
+	Password         string    `json:"password"`
+	Dob              time.Time `json:"dob"`
+	Age              int       `json:"age"`
+	Bio              string    `json:"bio"`
+	City             string    `json:"city"`
+	State            string    `json:"state"`
+	Title            string    `json:"title"`
+	Field            string    `json:"field"`
+	Title_Experience string    `json:"title_experience"`
+	Field_Experience string    `json:"field_experience"`
+	Prof_Pic_Url     string    `json:"prof_pic_url"`
 }
 
 // All_applicants will, given a database, attempt to return all applicants in the corresponding table

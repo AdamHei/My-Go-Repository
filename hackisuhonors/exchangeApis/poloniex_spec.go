@@ -2,8 +2,13 @@ package exchangeApis
 
 const POLONIEXURL = "https://poloniex.com/public?command=returnTicker"
 
-func (response PoloniexTicker) GetBidAsk() []string {
-	return []string{"Poloniex", response.Bid, response.Ask}
+func (response PoloniexTicker) GetExchangeData() map[string]map[string]interface{} {
+	return map[string]map[string]interface{}{
+		"Poloniex": {
+			"Bid": response.Bid,
+			"Ask": response.Ask,
+		},
+	}
 }
 
 type PoloniexTicker struct {

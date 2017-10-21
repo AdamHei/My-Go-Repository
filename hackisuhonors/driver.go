@@ -1,14 +1,12 @@
 package main
 
 import (
-	"fmt"
-	"github.com/adamhei/hackisuhonors/exchangeApis"
+	"github.com/adamhei/hackisuhonors/routes"
+	"log"
+	"net/http"
 )
 
 func main() {
-	ch := make(chan []string)
-	exchangeApis.FetchAllExchanges(ch)
-	for i := 0; i < exchangeApis.NUMEXCHANGES; i++ {
-		fmt.Println(<-ch)
-	}
+	router := routes.NewRouter()
+	log.Fatal(http.ListenAndServe(":8080", router))
 }

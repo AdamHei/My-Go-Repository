@@ -8,16 +8,15 @@ import (
 
 const NUMEXCHANGES = 4
 
-func FetchAllExchanges(ch chan<- []string) {
+func FetchAllExchanges(ch chan<- map[string]map[string]interface{}) {
 	go fetchBidAskPoloniex(ch)
 	go fetchBidAskGemini(ch)
 	go fetchBidAskKraken(ch)
 	go fetchBidAskGDAX(ch)
 }
 
-func fetchBidAskGemini(ch chan<- []string) {
+func fetchBidAskGemini(ch chan<- map[string]map[string]interface{}) {
 	resp, err := http.Get(GEMINIURL)
-	defer resp.Body.Close()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -27,13 +26,13 @@ func fetchBidAskGemini(ch chan<- []string) {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	resp.Body.Close()
 
-	ch <- geminiResponse.GetBidAsk()
+	ch <- geminiResponse.GetExchangeData()
 }
 
-func fetchBidAskKraken(ch chan<- []string) {
+func fetchBidAskKraken(ch chan<- map[string]map[string]interface{}) {
 	resp, err := http.Get(KRAKENURL)
-	defer resp.Body.Close()
 	if err != nil {
 		log.Fatal("Kraken request failed", err.Error())
 	}
@@ -43,13 +42,13 @@ func fetchBidAskKraken(ch chan<- []string) {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	resp.Body.Close()
 
-	ch <- krakenResponse.GetBidAsk()
+	ch <- krakenResponse.GetExchangeData()
 }
 
-func fetchBidAskGDAX(ch chan<- []string) {
+func fetchBidAskGDAX(ch chan<- map[string]map[string]interface{}) {
 	resp, err := http.Get(GDAXURL)
-	defer resp.Body.Close()
 	if err != nil {
 		log.Fatal("GDAX request failed", err.Error())
 	}
@@ -59,13 +58,13 @@ func fetchBidAskGDAX(ch chan<- []string) {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	resp.Body.Close()
 
-	ch <- gdaxResponse.GetBidAsk()
+	ch <- gdaxResponse.GetExchangeData()
 }
 
-func fetchBidAskPoloniex(ch chan<- []string) {
+func fetchBidAskPoloniex(ch chan<- map[string]map[string]interface{}) {
 	resp, err := http.Get(POLONIEXURL)
-	defer resp.Body.Close()
 	if err != nil {
 		log.Fatal("Poloniex request failed", err.Error())
 	}
@@ -76,8 +75,8 @@ func fetchBidAskPoloniex(ch chan<- []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	resp.Body.Close()
 
 	btcTicker := (*fullResponse)["USDT_BTC"]
-
-	ch <- btcTicker.GetBidAsk()
+	ch <- btcTicker.GetExchangeData()
 }

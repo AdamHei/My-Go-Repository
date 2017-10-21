@@ -1,5 +1,18 @@
 package exchangeApis
 
 type Ticker interface {
-	GetBidAsk() []string
+	GetExchangeData() map[string]map[string]interface{}
+}
+
+type MyError struct {
+	Err       string
+	ErrCode int
+}
+
+func (e *MyError) Error() string {
+	return e.Err
+}
+
+func (e *MyError) ErrorCode() int {
+	return e.ErrCode
 }

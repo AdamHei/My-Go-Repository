@@ -2,8 +2,13 @@ package exchangeApis
 
 const KRAKENURL = "https://api.kraken.com/0/public/Ticker?pair=XBTUSD"
 
-func (response KrakenResponse) GetBidAsk() []string {
-	return []string{"Kraken", response.Result.XBTUSD.BidArr[0], response.Result.XBTUSD.AskArr[0]}
+func (response KrakenResponse) GetExchangeData() map[string]map[string]interface{} {
+	return map[string]map[string]interface{}{
+		"Kraken": {
+			"Bid": response.Result.XBTUSD.BidArr[0],
+			"Ask": response.Result.XBTUSD.AskArr[0],
+		},
+	}
 }
 
 type KrakenResponse struct {
