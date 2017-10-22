@@ -8,74 +8,79 @@ import (
 
 const NUMEXCHANGES = 4
 
-func FetchAllExchanges(ch chan<- map[string]map[string]interface{}) {
+func FetchAllExchanges(ch chan<- map[string]map[string]string) {
 	go fetchBidAskPoloniex(ch)
 	go fetchBidAskGemini(ch)
 	go fetchBidAskKraken(ch)
 	go fetchBidAskGDAX(ch)
 }
 
-func fetchBidAskGemini(ch chan<- map[string]map[string]interface{}) {
+func fetchBidAskGemini(ch chan<- map[string]map[string]string) {
 	resp, err := http.Get(GEMINIURL)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Println(err)
 	}
 
 	geminiResponse := new(GeminiTicker)
 	err = json.NewDecoder(resp.Body).Decode(geminiResponse)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+
 	resp.Body.Close()
+	if err != nil {
+		log.Println(err)
+	}
 
 	ch <- geminiResponse.GetExchangeData()
 }
 
-func fetchBidAskKraken(ch chan<- map[string]map[string]interface{}) {
+func fetchBidAskKraken(ch chan<- map[string]map[string]string) {
 	resp, err := http.Get(KRAKENURL)
 	if err != nil {
-		log.Fatal("Kraken request failed", err.Error())
+		log.Println(err)
 	}
 
 	krakenResponse := new(KrakenResponse)
 	err = json.NewDecoder(resp.Body).Decode(krakenResponse)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+
 	resp.Body.Close()
+	if err != nil {
+		log.Println(err)
+	}
 
 	ch <- krakenResponse.GetExchangeData()
 }
 
-func fetchBidAskGDAX(ch chan<- map[string]map[string]interface{}) {
+func fetchBidAskGDAX(ch chan<- map[string]map[string]string) {
 	resp, err := http.Get(GDAXURL)
 	if err != nil {
-		log.Fatal("GDAX request failed", err.Error())
+		log.Println(err)
+		return
 	}
 
 	gdaxResponse := new(GDAXTicker)
 	err = json.NewDecoder(resp.Body).Decode(gdaxResponse)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
+
 	resp.Body.Close()
+	if err != nil {
+		log.Println(err)
+	}
 
 	ch <- gdaxResponse.GetExchangeData()
 }
 
-func fetchBidAskPoloniex(ch chan<- map[string]map[string]interface{}) {
+func fetchBidAskPoloniex(ch chan<- map[string]map[string]string) {
 	resp, err := http.Get(POLONIEXURL)
 	if err != nil {
-		log.Fatal("Poloniex request failed", err.Error())
+		log.Println(err)
+		return
 	}
 
 	fullResponse := new(map[string]PoloniexTicker)
 	err = json.NewDecoder(resp.Body).Decode(fullResponse)
 
-	if err != nil {
-		log.Fatal(err)
-	}
 	resp.Body.Close()
+	if err != nil {
+		log.Println(err)
+	}
 
 	btcTicker := (*fullResponse)["USDT_BTC"]
 	ch <- btcTicker.GetExchangeData()

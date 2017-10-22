@@ -8,8 +8,8 @@ import (
 
 // HTTP methods
 const (
-	GET    = "GET"
-	POST   = "POST"
+	GET  = "GET"
+	POST = "POST"
 )
 
 type route struct {
@@ -21,10 +21,21 @@ type RouteList []route
 
 func NewRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
+
+	router.Methods(GET).
+		Path("/").
+		Name("Index").
+		HandlerFunc(handlers.Index)
+
 	router.Methods(GET).
 		Path("/exchange-data/all").
 		Name("AllExchangeData").
 		HandlerFunc(handlers.AllBidAskData)
+
+	router.Methods(GET).
+		Path("/exchange-data/biggest-spread").
+		Name("BiggestSpread").
+		HandlerFunc(handlers.BiggestSpread)
 
 	router.Headers("Content-Type", "application/json")
 	return router

@@ -4,8 +4,8 @@ import "time"
 
 const GDAXURL = "https://api.gdax.com/products/BTC-USD/ticker"
 
-func (response GDAXTicker) GetExchangeData() map[string]map[string]interface{} {
-	return map[string]map[string]interface{}{
+func (response GDAXTicker) GetExchangeData() map[string]map[string]string {
+	return map[string]map[string]string{
 		"GDAX": {
 			"Bid": response.Bid,
 			"Ask": response.Ask,

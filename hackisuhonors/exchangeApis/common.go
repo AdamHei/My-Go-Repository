@@ -1,7 +1,7 @@
 package exchangeApis
 
 type Ticker interface {
-	GetExchangeData() map[string]map[string]interface{}
+	GetExchangeData() map[string]map[string]string
 }
 
 type MyError struct {
