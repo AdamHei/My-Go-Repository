@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/adamhei/hackisuhonors/routes"
+	"github.com/adamhei/honors-project/routes"
 	"log"
 	"net/http"
 )

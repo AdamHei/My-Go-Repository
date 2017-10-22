@@ -3,7 +3,7 @@ package routes
 import (
 	"github.com/gorilla/mux"
 	"net/http"
-	"github.com/adamhei/hackisuhonors/handlers"
+	"github.com/adamhei/honors-project/handlers"
 )
 
 // HTTP methods

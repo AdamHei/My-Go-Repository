@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"log"
 	"encoding/json"
-	"github.com/adamhei/hackisuhonors/exchangeApis"
+	"github.com/adamhei/honors-project/exchangeApis"
 )
 
 func Index(writer http.ResponseWriter, _ *http.Request) {

@@ -2,12 +2,12 @@ package handlers
 
 import (
 	"net/http"
-	"github.com/adamhei/hackisuhonors/exchangeApis"
+	"github.com/adamhei/honors-project/exchangeApis"
 	"math"
 	"strconv"
 )
 
-func BiggestSpread(writer http.ResponseWriter, req *http.Request) {
+func BiggestSpread(writer http.ResponseWriter, _ *http.Request) {
 	ch := make(chan map[string]map[string]string)
 
 	exchangeApis.FetchAllExchanges(ch)

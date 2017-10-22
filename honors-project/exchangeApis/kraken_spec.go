@@ -1,6 +1,30 @@
 package exchangeApis
 
-const KRAKENURL = "https://api.kraken.com/0/public/Ticker?pair=XBTUSD"
+import (
+	"net/http"
+	"log"
+	"encoding/json"
+)
+
+const krakenurl = "https://api.kraken.com/0/public/Ticker?pair=XBTUSD"
+
+func fetchBidAskKraken(ch chan<- map[string]map[string]string) {
+	resp, err := http.Get(krakenurl)
+	if err != nil {
+		log.Println("Could not fetch Kraken data: ", err)
+	}
+
+	krakenResponse := new(KrakenResponse)
+	err = json.NewDecoder(resp.Body).Decode(krakenResponse)
+
+	resp.Body.Close()
+	if err != nil {
+		log.Println("Could not parse Kraken json: ", err)
+		return
+	}
+
+	ch <- krakenResponse.GetExchangeData()
+}
 
 func (response KrakenResponse) GetExchangeData() map[string]map[string]string {
 	return map[string]map[string]string{
