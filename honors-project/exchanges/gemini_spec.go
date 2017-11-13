@@ -1,17 +1,16 @@
-package exchangeApis
+package exchanges
 
 import (
 	"net/http"
-	"log"
 	"encoding/json"
 )
 
 const geminiurl = "https://api.gemini.com/v1/pubticker/btcusd"
 
-func fetchBidAskGemini(ch chan<- map[string]map[string]string) {
+func fetchBidAskGemini(ch chan<- LimitedJson) {
 	resp, err := http.Get(geminiurl)
 	if err != nil {
-		log.Println("Could not fetch Gemini data: ", err)
+		ErrorHandler("Could not fetch Gemini data:"+err.Error(), ch)
 	}
 
 	geminiResponse := new(GeminiTicker)
@@ -19,15 +18,15 @@ func fetchBidAskGemini(ch chan<- map[string]map[string]string) {
 
 	resp.Body.Close()
 	if err != nil {
-		log.Println("Could not parse Gemini json: ", err)
+		ErrorHandler("Could not parse Gemini json:"+err.Error(), ch)
 		return
 	}
 
 	ch <- geminiResponse.GetExchangeData()
 }
 
-func (response GeminiTicker) GetExchangeData() map[string]map[string]string {
-	return map[string]map[string]string{
+func (response GeminiTicker) GetExchangeData() LimitedJson {
+	return LimitedJson{
 		"Gemini": {
 			"Bid": response.Bid,
 			"Ask": response.Ask,

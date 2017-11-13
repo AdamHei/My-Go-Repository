@@ -8,8 +8,7 @@ import (
 
 // HTTP methods
 const (
-	GET  = "GET"
-	POST = "POST"
+	GET = "GET"
 )
 
 type route struct {

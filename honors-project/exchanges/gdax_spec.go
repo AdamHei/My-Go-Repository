@@ -1,35 +1,34 @@
-package exchangeApis
+package exchanges
 
 import (
 	"time"
 	"net/http"
-	"log"
 	"encoding/json"
 )
 
 const gdaxurl = "https://api.gdax.com/products/BTC-USD/ticker"
 
-func fetchBidAskGDAX(ch chan<- map[string]map[string]string) {
+func fetchBidAskGDAX(ch chan<- LimitedJson) {
 	resp, err := http.Get(gdaxurl)
 	if err != nil {
-		log.Println("Could not fetch data from GDAX: ", err)
+		ErrorHandler("Could not fetch data from GDAX:"+err.Error(), ch)
 		return
 	}
 
 	gdaxResponse := new(GDAXTicker)
 	err = json.NewDecoder(resp.Body).Decode(gdaxResponse)
-
 	resp.Body.Close()
+
 	if err != nil {
-		log.Println("Could not parse GDAX json: ", err)
+		ErrorHandler("Could not parse GDAX json:"+err.Error(), ch)
 		return
 	}
 
 	ch <- gdaxResponse.GetExchangeData()
 }
 
-func (response GDAXTicker) GetExchangeData() map[string]map[string]string {
-	return map[string]map[string]string{
+func (response GDAXTicker) GetExchangeData() LimitedJson {
+	return LimitedJson{
 		"GDAX": {
 			"Bid": response.Bid,
 			"Ask": response.Ask,

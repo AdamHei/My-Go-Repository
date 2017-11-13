@@ -4,14 +4,14 @@ import (
 	"net/http"
 	"log"
 	"encoding/json"
-	"github.com/adamhei/honors-project/exchangeApis"
+	"github.com/adamhei/honors-project/exchanges"
 )
 
 func Index(writer http.ResponseWriter, _ *http.Request) {
-	respond(writer, "Welcome to the Bitcoin Arbitrage Detector", nil)
+	respond(writer, "{Welcome to the Bitcoin Arbitrage Detector}", nil)
 }
 
-func respond(writer http.ResponseWriter, data interface{}, err *exchangeApis.MyError) {
+func respond(writer http.ResponseWriter, data interface{}, err *exchanges.MyError) {
 	writer.Header().Set("Content-Type", "application/json; charset=utf-8")
 
 	if err != nil {

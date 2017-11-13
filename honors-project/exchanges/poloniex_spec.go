@@ -1,26 +1,25 @@
-package exchangeApis
+package exchanges
 
 import (
 	"net/http"
-	"log"
 	"encoding/json"
 )
 
 const poloniexurl = "http://poloniex.com/public?command=returnTicker"
 
-func fetchBidAskPoloniex(ch chan<- map[string]map[string]string) {
+func fetchBidAskPoloniex(ch chan<- LimitedJson) {
 	resp, err := http.Get(poloniexurl)
 	if err != nil {
-		log.Println("Could not fetch Poloniex data: ", err)
+		ErrorHandler("Could not fetch Poloniex data: "+err.Error(), ch)
 		return
 	}
 
 	fullResponse := new(map[string]PoloniexTicker)
 	err = json.NewDecoder(resp.Body).Decode(fullResponse)
-
 	resp.Body.Close()
+
 	if err != nil {
-		log.Println("Could not parse Poloniex json: ", err)
+		ErrorHandler("Could not parse Poloniex json: "+err.Error(), ch)
 		return
 	}
 
@@ -28,8 +27,8 @@ func fetchBidAskPoloniex(ch chan<- map[string]map[string]string) {
 	ch <- btcTicker.GetExchangeData()
 }
 
-func (response PoloniexTicker) GetExchangeData() map[string]map[string]string {
-	return map[string]map[string]string{
+func (response PoloniexTicker) GetExchangeData() LimitedJson {
+	return LimitedJson{
 		"Poloniex": {
 			"Bid": response.Bid,
 			"Ask": response.Ask,

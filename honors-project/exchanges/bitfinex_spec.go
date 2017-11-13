@@ -1,17 +1,16 @@
-package exchangeApis
+package exchanges
 
 import (
 	"net/http"
-	"log"
 	"encoding/json"
 )
 
 const bitfinexurl = "https://api.bitfinex.com/v1/pubticker/btcusd"
 
-func fetchBidAskBitfinex(ch chan<-map[string]map[string]string)  {
+func fetchBidAskBitfinex(ch chan<- LimitedJson) {
 	resp, err := http.Get(bitfinexurl)
 	if err != nil {
-		log.Println("Could not fetch data from Bitfinex: ", err)
+		ErrorHandler("Could not fetch data from Bitfinex:"+err.Error(), ch)
 		return
 	}
 
@@ -20,15 +19,15 @@ func fetchBidAskBitfinex(ch chan<-map[string]map[string]string)  {
 
 	resp.Body.Close()
 	if err != nil {
-		log.Println("Could not parse Bitfinex response: ", err)
+		ErrorHandler("Could not parse Bitfinex response"+err.Error(), ch)
 		return
 	}
 
 	ch <- bitResponse.GetExchangeData()
 }
 
-func (response BitfinexTicker) GetExchangeData() map[string]map[string]string {
-	return map[string]map[string]string{
+func (response BitfinexTicker) GetExchangeData() LimitedJson {
+	return LimitedJson{
 		"Bitfinex": {
 			"Bid": response.Bid,
 			"Ask": response.Ask,
