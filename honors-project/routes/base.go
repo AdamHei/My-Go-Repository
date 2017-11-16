@@ -36,6 +36,11 @@ func NewRouter() *mux.Router {
 		Name("BiggestSpread").
 		HandlerFunc(handlers.BiggestSpread)
 
+	router.Methods(GET).
+		Path("/historical-data/compare/{exchange1}/{exchange2}").
+		Name("CompareHistory").
+		HandlerFunc(handlers.Compare)
+
 	router.Headers("Content-Type", "application/json")
 	return router
 }
