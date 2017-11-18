@@ -1,15 +1,16 @@
 package handlers
 
 import (
-	"net/http"
 	"github.com/adamhei/honors-project/exchanges"
+	"github.com/adamhei/honors-project/exchanges/models"
 	"math"
+	"net/http"
 	"strconv"
 )
 
 // Return the biggest spread between the highest bid and the lowest ask among all exchanges
 func BiggestSpread(writer http.ResponseWriter, _ *http.Request) {
-	ch := make(chan exchanges.LimitedJson)
+	ch := make(chan models.LimitedJson)
 
 	exchanges.FetchAllExchanges(ch)
 
@@ -17,7 +18,7 @@ func BiggestSpread(writer http.ResponseWriter, _ *http.Request) {
 	buyPrice := math.MaxFloat64
 	sellPrice := 0.0
 	for i := 0; i < exchanges.NUMEXCHANGES; i++ {
-		exchangeData := <- ch
+		exchangeData := <-ch
 		for key, val := range exchangeData {
 			v, _ := strconv.ParseFloat(val["Ask"], 64)
 			if v < buyPrice {
@@ -35,21 +36,21 @@ func BiggestSpread(writer http.ResponseWriter, _ *http.Request) {
 
 	spread := sellPrice - buyPrice
 	response := map[string]string{
-		"BuyExchange": buyExchange,
+		"BuyExchange":  buyExchange,
 		"SellExchange": sellExchange,
-		"BuyPrice": strconv.FormatFloat(buyPrice, 'f', -1, 64),
-		"SellPrice": strconv.FormatFloat(sellPrice, 'f', -1, 64),
-		"Spread": strconv.FormatFloat(spread, 'f', -1, 64),
+		"BuyPrice":     strconv.FormatFloat(buyPrice, 'f', -1, 64),
+		"SellPrice":    strconv.FormatFloat(sellPrice, 'f', -1, 64),
+		"Spread":       strconv.FormatFloat(spread, 'f', -1, 64),
 	}
 	respond(writer, response, nil)
 }
 
 // Return the Bid/Ask data for all exchanges
 func AllBidAskData(writer http.ResponseWriter, _ *http.Request) {
-	ch := make(chan exchanges.LimitedJson)
+	ch := make(chan models.LimitedJson)
 
 	exchanges.FetchAllExchanges(ch)
-	response := make(exchanges.LimitedJson)
+	response := make(models.LimitedJson)
 
 	for i := 0; i < exchanges.NUMEXCHANGES; i++ {
 		exchangeData := <-ch

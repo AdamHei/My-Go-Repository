@@ -1,9 +1,9 @@
 package routes
 
 import (
+	"github.com/adamhei/honors-project/handlers"
 	"github.com/gorilla/mux"
 	"net/http"
-	"github.com/adamhei/honors-project/handlers"
 )
 
 // HTTP methods

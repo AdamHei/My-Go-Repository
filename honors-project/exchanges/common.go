@@ -1,38 +1,20 @@
 package exchanges
 
-import "log"
+import (
+	"github.com/adamhei/honors-project/exchanges/bitfinex"
+	"github.com/adamhei/honors-project/exchanges/gdax"
+	"github.com/adamhei/honors-project/exchanges/gemini"
+	"github.com/adamhei/honors-project/exchanges/kraken"
+	"github.com/adamhei/honors-project/exchanges/models"
+	"github.com/adamhei/honors-project/exchanges/poloniex"
+)
 
 const NUMEXCHANGES = 5
 
-type Ticker interface {
-	GetExchangeData() LimitedJson
-}
-
-type LimitedJson map[string]map[string]string
-
-type MyError struct {
-	Err     string
-	ErrCode int
-}
-
-func (e *MyError) Error() string {
-	return e.Err
-}
-
-func (e *MyError) ErrorCode() int {
-	return e.ErrCode
-}
-
-// Print the error message and send an empty response through the channel
-func ErrorHandler(errorMsg string, ch chan<- LimitedJson) {
-	log.Print(errorMsg)
-	ch <- make(LimitedJson)
-}
-
-func FetchAllExchanges(ch chan<- LimitedJson) {
-	go fetchBidAskPoloniex(ch)
-	go fetchBidAskGemini(ch)
-	go fetchBidAskKraken(ch)
-	go fetchBidAskGDAX(ch)
-	go fetchBidAskBitfinex(ch)
+func FetchAllExchanges(ch chan<- models.LimitedJson) {
+	go poloniex.FetchBidAskPoloniex(ch)
+	go gemini.FetchBidAskData(ch)
+	go kraken.FetchBidAskKraken(ch)
+	go gdax.FetchBidAskGDAX(ch)
+	go bitfinex.FetchBidAskBitfinex(ch)
 }

@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"net/http"
+	"github.com/adamhei/honors-project/exchanges/gemini"
 	"github.com/gorilla/mux"
-	"github.com/adamhei/honors-project/exchanges"
+	"net/http"
 	"time"
 )
 
@@ -13,7 +13,7 @@ func Compare(writer http.ResponseWriter, req *http.Request) {
 	_ = args["exchange1"]
 	_ = args["exchange2"]
 
-	orders := exchanges.GetTradeHistory(time.Date(2017, time.January, 1, 12, 0, 0, 0, time.Local), time.Now())
+	orders := gemini.GetTradeHistory(time.Date(2017, time.January, 1, 12, 0, 0, 0, time.Local), time.Now())
 
 	respond(writer, orders, nil)
 }
