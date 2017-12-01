@@ -8,6 +8,7 @@ import (
 )
 
 const tickerUrl = "http://poloniex.com/public?command=returnTicker"
+const tickerTag = "USDT_BTC"
 
 func FetchBidAskPoloniex(ch chan<- models.LimitedJson) {
 	resp, err := http.Get(tickerUrl)
@@ -25,6 +26,6 @@ func FetchBidAskPoloniex(ch chan<- models.LimitedJson) {
 		return
 	}
 
-	btcTicker := (*fullResponse)["USDT_BTC"]
+	btcTicker := (*fullResponse)[tickerTag]
 	ch <- btcTicker.GetExchangeData()
 }

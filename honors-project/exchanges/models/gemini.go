@@ -23,8 +23,8 @@ type volume struct {
 }
 
 type GeminiOrder struct {
-	Timestamp   int    `json:"timestamp"`
-	TimestampMs int    `json:"timestampms"`
+	Timestamp   int64  `json:"timestamp"`
+	TimestampMs int64  `json:"timestampms"`
 	TID         int    `json:"tid"`
 	Price       string `json:"price"`
 	Amount      string `json:"amount"`
